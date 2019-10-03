@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 
 import Participant from './Participant';
 import DifferentGroupInput from './DifferentGroupInput';
+import GroupsTable from './GroupsTable';
 import utils from '../helpers/utils';
 
 class GroupMatchmaker extends React.Component {
@@ -14,7 +15,8 @@ class GroupMatchmaker extends React.Component {
       newParticipantName: '',
       participants: [],
       showModal: false,
-      ModalComp: null
+      ModalComp: null,
+      groups: []
     };
 
     this.onKeyPressed = this.onKeyPressed.bind(this);
@@ -70,7 +72,9 @@ class GroupMatchmaker extends React.Component {
       groupTotal
     } = this.state;
 
-    console.log(utils.createGroups(participants, parseInt(groupTotal, 10)));
+    this.setState({
+      groups: utils.createGroups(participants, parseInt(groupTotal, 10))
+    });
   }
 
   onShowDifferentGroup(participantData) {
@@ -111,7 +115,8 @@ class GroupMatchmaker extends React.Component {
       newParticipantName,
       groupTotal,
       showModal,
-      ModalComp
+      ModalComp,
+      groups
     } = this.state;
 
     return (
@@ -121,7 +126,7 @@ class GroupMatchmaker extends React.Component {
               className="input-add"
               placeholder="팀명을 입력하세요"
               onChange={(evt) => this.setState({newParticipantName: evt.currentTarget.value})}
-              onKeyDown={this.onKeyPressed}
+              onKeyPress={this.onKeyPressed}
               value={newParticipantName}
               type="text"
               />
@@ -141,6 +146,7 @@ class GroupMatchmaker extends React.Component {
             />
           <button onClick={this.createGroups}>그룹 생성</button>
         </div>
+        <GroupsTable groupsData={groups} />
         <Modal
           ariaHideApp={false}
           isOpen={showModal}

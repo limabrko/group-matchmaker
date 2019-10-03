@@ -15,6 +15,18 @@ function getRndInteger(min, max, blockedValues = []) {
 }
 
 /**
+ * Shuffles array in place
+ * @param {Array} a
+ */
+function shuffleArray(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
  * Create randomized groups based on preferences
  * @param {object[]} participants 
  * @param {number} groupTotal 
@@ -37,59 +49,51 @@ function createGroups(participants, groupTotal) {
   }
 
   // Create priority list
-  const priorityList = [];
-  for (let i = 0; i < participants.length; i++) {
-    const curParticipant = participants[i];
-    const curParticipantPriority = [curParticipant];
+  const priorityParticipants = participants.filter((participant) => participant.differentGroup.length !== 0);
 
-    curParticipant.differentGroup.forEach((differentGroupPart) => {
-      curParticipantPriority.push(differentGroupPart);
-    });
-
-    if (curParticipantPriority.length > 1) {
-      priorityList.push(curParticipantPriority);
-    }
-  }
-
-  // Select priority list first
-  priorityList.forEach((priorityParticipants) => {
-    let groupsUnavailable = [];
-
-    for (let i = 0; i < priorityParticipants.length; i++) {
-      if (!priorityParticipants[i].group) {
-        const selectedGroupIndex = getRndInteger(0, groups.length, groupsUnavailable);
-        const selectedGroup = groups[selectedGroupIndex];
-        groupsUnavailable.push(selectedGroupIndex);
-
-        priorityParticipants[i].group = selectedGroup;
-        selectedGroup.participants.push(priorityParticipants[i]);
-
-        if(groupsUnavailable.length === groups.length) {
-          groupsUnavailable = [];
-        }
+  for (let i = 0; i < priorityParticipants.length; i++) {
+    const curParticipant = priorityParticipants[i];
+    const unavailableGroups = curParticipant.differentGroup.reduce((acc, differentGroupPart) => {
+      if(differentGroupPart.group && acc.indexOf(differentGroupPart.group) === -1) {
+        acc.push(differentGroupPart.group);
       }
-    }
-  });
+
+      return acc;
+    }, []);
+    const unavailableGroupsIndex = unavailableGroups.map((unavailableGroup) => groups.indexOf(unavailableGroup));
+
+    const selectedGroupIndex = getRndInteger(0, groups.length, unavailableGroupsIndex);
+    const selectedGroup = groups[selectedGroupIndex];
+
+    curParticipant.group = selectedGroup;
+    selectedGroup.participants.push(curParticipant);
+  }
 
   // Select other participants
   let missingParticipants = participants.filter((participant) => participant.group === null);
+  let i = 0;
 
-  groups.every((group) => {
-    if(group.participants.length >= participantsPerGroup) {
-      return true;
-    }
-
-    for(let i = group.participants.length; i < participantsPerGroup; i++) {
-      if(!missingParticipants.length) {
-        return false;
+  while(missingParticipants.length !== 0) {
+    for(let j = 0; j < groupTotal; j++) {
+      if(!groups[j].participants[i]) {
+        if(!missingParticipants.length) {
+          continue;
+        }
+  
+        const selectedParticipantIndex = getRndInteger(0, missingParticipants.length);
+        const selectedParticipant = missingParticipants[selectedParticipantIndex];
+        selectedParticipant.group = groups[j];
+        groups[j].participants.push(selectedParticipant);
+        missingParticipants.splice(selectedParticipantIndex, 1);
       }
-
-      const selectedParticipantIndex = getRndInteger(0, missingParticipants.length);
-      const selectedParticipant = missingParticipants[selectedParticipantIndex];
-      selectedParticipant.group = group;
-      group.participants.push(selectedParticipant);
-      missingParticipants.splice(selectedParticipantIndex, 1);
     }
+
+    i++;
+  }
+
+  // Shuffle participants inside the group
+  groups.forEach((group) => {
+    shuffleArray(group.participants);
   });
 
   return groups;
