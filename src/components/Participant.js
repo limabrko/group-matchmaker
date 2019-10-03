@@ -27,13 +27,20 @@ class Participant extends React.Component {
   }
 
   render() {
-    const {name} = this.state;
-    const {data} = this.props;
+    const {data, onShowDifferentGroup} = this.props;
 
     return (
       <div className="participant">
         <div className="inner">
-          {name}
+          <div className="name">
+            {data.name}
+          </div>
+          <ul>
+            {data.differentGroup.map((differentGroupPart) => <li key={differentGroupPart.name}>{differentGroupPart.name}</li>)}
+          </ul>
+          <div>
+            <button onClick={() => onShowDifferentGroup(data)}>차단팀 추가</button>
+          </div>
         </div>
       </div>
     );

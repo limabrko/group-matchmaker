@@ -1,6 +1,8 @@
 import React from 'react';
+import Modal from 'react-modal';
 
 import Participant from './Participant';
+import DifferentGroupInput from './DifferentGroupInput';
 import utils from '../helpers/utils';
 
 class GroupMatchmaker extends React.Component {
@@ -10,18 +12,37 @@ class GroupMatchmaker extends React.Component {
     this.state = {
       groupTotal: 4,
       newParticipantName: '',
-      participants: []
+      participants: [],
+      showModal: false,
+      ModalComp: null
     };
 
     this.onKeyPressed = this.onKeyPressed.bind(this);
     this.addParticipant = this.addParticipant.bind(this);
     this.createGroups = this.createGroups.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.onShowDifferentGroup = this.onShowDifferentGroup.bind(this);
+    this.onAddDifferentGroup = this.onAddDifferentGroup.bind(this);
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
   }
 
   onKeyPressed(evt) {
     if(evt.key === 'Enter') {
       this.addParticipant();
     }
+  }
+
+  onAddDifferentGroup(participantData, differentGroupParticipant) {
+    participantData.differentGroup.push(differentGroupParticipant);
+    differentGroupParticipant.differentGroup.push(participantData);
+
+    this.setState({
+      showModal: false,
+      ModalComp: null
+    });
   }
 
   addParticipant() {
@@ -33,7 +54,8 @@ class GroupMatchmaker extends React.Component {
 
     const newParticipant = {
       name: newParticipantName,
-      differentGroup: []
+      differentGroup: [],
+      group: null
     };
 
     this.setState({
@@ -51,6 +73,22 @@ class GroupMatchmaker extends React.Component {
     console.log(utils.createGroups(participants, parseInt(groupTotal, 10)));
   }
 
+  onShowDifferentGroup(participantData) {
+    const {participants} = this.state;
+
+    const ModalComp = (
+      <DifferentGroupInput 
+        participants={participants} 
+        participantData={participantData} 
+        onAddDifferentGroup={this.onAddDifferentGroup}
+        />
+    );
+    this.setState({
+      showModal: true,
+      ModalComp
+    });
+  }
+
   renderParticipantsList() {
     const {participants} = this.state;
 
@@ -58,13 +96,22 @@ class GroupMatchmaker extends React.Component {
       return <h3>등록된 팀이 없습니다.</h3>
     }
 
-    return participants.map((participant, i) => <Participant data={participant} key={participant.name} index={i} />);
+    return participants.map((participant, i) => (
+      <Participant 
+        data={participant} 
+        key={participant.name} 
+        onShowDifferentGroup={this.onShowDifferentGroup}
+        index={i} 
+        />
+      ));
   }
 
   render() {
     const {
       newParticipantName,
-      groupTotal
+      groupTotal,
+      showModal,
+      ModalComp
     } = this.state;
 
     return (
@@ -94,6 +141,15 @@ class GroupMatchmaker extends React.Component {
             />
           <button onClick={this.createGroups}>그룹 생성</button>
         </div>
+        <Modal
+          ariaHideApp={false}
+          isOpen={showModal}
+          onRequestClose={this.closeModal}
+          // style={customStyles}
+          contentLabel="Example Modal"
+        >
+          {ModalComp ? ModalComp : null}
+        </Modal>
       </div>
     );
   }
