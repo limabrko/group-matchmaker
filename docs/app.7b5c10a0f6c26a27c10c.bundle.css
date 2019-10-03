@@ -1,0 +1,22 @@
+h1 {
+  padding: 40px 30px 10px;
+  margin: 0; }
+
+.group-matchmaker {
+  margin: 20px; }
+
+.participant-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; }
+
+.participant {
+  width: 20%; }
+  .participant .inner {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd; }
+  .participant .name {
+    box-sizing: border-box;
+    width: 100%; }
+

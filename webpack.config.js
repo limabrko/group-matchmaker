@@ -7,7 +7,7 @@ const devMode = process.env.NODE_ENV === 'development';
 
 const config = {
   mode: 'development',
-  devtool: devMode ? 'source-map' : null,
+  devtool: devMode ? 'source-map' : false,
   entry: {
     app: path.join(__dirname, 'src/App')
   },
