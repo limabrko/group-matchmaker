@@ -25,6 +25,8 @@ class GroupMatchmaker extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.onShowDifferentGroup = this.onShowDifferentGroup.bind(this);
     this.onAddDifferentGroup = this.onAddDifferentGroup.bind(this);
+    this.deleteParticipant = this.deleteParticipant.bind(this);
+    this.deleteDifferentGroup = this.deleteDifferentGroup.bind(this);
   }
 
   closeModal() {
@@ -51,6 +53,13 @@ class GroupMatchmaker extends React.Component {
     const {participants, newParticipantName} = this.state;
 
     if(!newParticipantName) {
+      return;
+    }
+
+    const hasSameName = participants.some((participant) => participant.name === newParticipantName);
+
+    if(hasSameName) {
+      alert('같은 이름 팀이 있습니다.');
       return;
     }
 
@@ -93,6 +102,25 @@ class GroupMatchmaker extends React.Component {
     });
   }
 
+  deleteDifferentGroup(participantData, differentGroupPart) {
+    const index1 = participantData.differentGroup.indexOf(differentGroupPart);
+    const index2 = differentGroupPart.differentGroup.indexOf(participantData);
+    participantData.differentGroup.splice(index1, 1);
+    differentGroupPart.differentGroup.splice(index2, 1);
+
+    this.setState({
+      groups: this.state.groups
+    });
+  }
+
+  deleteParticipant(participantData) {
+    const newParticipants = this.state.participants.filter((participant) => participantData !== participant);
+
+    this.setState({
+      participants: newParticipants
+    });
+  }
+
   renderParticipantsList() {
     const {participants} = this.state;
 
@@ -105,6 +133,8 @@ class GroupMatchmaker extends React.Component {
         data={participant} 
         key={participant.name} 
         onShowDifferentGroup={this.onShowDifferentGroup}
+        onDelete={this.deleteParticipant}
+        onDeleteDifferentGroup={this.deleteDifferentGroup}
         index={i} 
         />
       ));
