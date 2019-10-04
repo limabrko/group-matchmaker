@@ -13,7 +13,16 @@ class GroupMatchmaker extends React.Component {
     this.state = {
       groupTotal: 4,
       newParticipantName: '',
-      participants: [],
+      participants: [
+        {
+          name: 'Test',
+          differentGroup: []
+        },
+        {
+          name: 'Test2',
+          differentGroup: []
+        }
+      ],
       showModal: false,
       ModalComp: null,
       groups: []
@@ -29,14 +38,26 @@ class GroupMatchmaker extends React.Component {
     this.deleteDifferentGroup = this.deleteDifferentGroup.bind(this);
   }
 
-  closeModal() {
-    this.setState({ showModal: false });
-  }
-
   onKeyPressed(evt) {
     if(evt.key === 'Enter') {
       this.addParticipant();
     }
+  }
+
+  onShowDifferentGroup(participantData) {
+    const {participants} = this.state;
+
+    const ModalComp = (
+      <DifferentGroupInput
+        participants={participants}
+        participantData={participantData}
+        onAddDifferentGroup={this.onAddDifferentGroup}
+      />
+    );
+    this.setState({
+      showModal: true,
+      ModalComp
+    });
   }
 
   onAddDifferentGroup(participantData, differentGroupParticipant) {
@@ -56,7 +77,7 @@ class GroupMatchmaker extends React.Component {
       return;
     }
 
-    const hasSameName = participants.some((participant) => participant.name === newParticipantName);
+    const hasSameName = participants.some((participant) => participant.name.toLowerCase() === newParticipantName.toLowerCase());
 
     if(hasSameName) {
       alert('같은 이름 팀이 있습니다.');
@@ -86,35 +107,25 @@ class GroupMatchmaker extends React.Component {
     });
   }
 
-  onShowDifferentGroup(participantData) {
-    const {participants} = this.state;
-
-    const ModalComp = (
-      <DifferentGroupInput 
-        participants={participants} 
-        participantData={participantData} 
-        onAddDifferentGroup={this.onAddDifferentGroup}
-        />
-    );
-    this.setState({
-      showModal: true,
-      ModalComp
-    });
+  closeModal() {
+    this.setState({showModal: false});
   }
 
   deleteDifferentGroup(participantData, differentGroupPart) {
+    const {groups} = this.state;
     const index1 = participantData.differentGroup.indexOf(differentGroupPart);
     const index2 = differentGroupPart.differentGroup.indexOf(participantData);
     participantData.differentGroup.splice(index1, 1);
     differentGroupPart.differentGroup.splice(index2, 1);
 
     this.setState({
-      groups: this.state.groups
+      groups
     });
   }
 
   deleteParticipant(participantData) {
-    const newParticipants = this.state.participants.filter((participant) => participantData !== participant);
+    const {participants} = this.state;
+    const newParticipants = participants.filter((participant) => participantData !== participant);
 
     this.setState({
       participants: newParticipants
@@ -125,19 +136,19 @@ class GroupMatchmaker extends React.Component {
     const {participants} = this.state;
 
     if(!participants.length) {
-      return <h3>등록된 팀이 없습니다.</h3>
+      return <h3>등록된 참가자이 없습니다.</h3>;
     }
 
     return participants.map((participant, i) => (
-      <Participant 
-        data={participant} 
-        key={participant.name} 
+      <Participant
+        data={participant}
+        key={participant.name}
         onShowDifferentGroup={this.onShowDifferentGroup}
         onDelete={this.deleteParticipant}
         onDeleteDifferentGroup={this.deleteDifferentGroup}
-        index={i} 
-        />
-      ));
+        index={i}
+      />
+    ));
   }
 
   render() {
@@ -151,30 +162,34 @@ class GroupMatchmaker extends React.Component {
 
     return (
       <div className="group-matchmaker">
-        <div className="participant-control">
-          <input 
-              className="input-add"
-              placeholder="팀명을 입력하세요"
-              onChange={(evt) => this.setState({newParticipantName: evt.currentTarget.value})}
-              onKeyPress={this.onKeyPressed}
-              value={newParticipantName}
-              type="text"
+        <div className="row justify-content-center">
+          <div className="col-sm-12 col-md-6">
+            <div className="input-group">
+              <input
+                className="form-control form-control-lg"
+                placeholder="참가자명을 입력하세요"
+                onChange={(evt) => this.setState({newParticipantName: evt.currentTarget.value})}
+                onKeyPress={this.onKeyPressed}
+                value={newParticipantName}
+                type="text"
               />
-          <div>
-            <button onClick={this.addParticipant}>팀 추가</button>
+              <div className="input-group-append">
+                <button type="button" className="btn btn-primary" onClick={this.addParticipant}>참가자 추가</button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="participant-list">
           { this.renderParticipantsList() }
         </div>
         <div>
-        <input 
+          <input
             placeholder="그룹수"
             onChange={(evt) => this.setState({groupTotal: evt.currentTarget.value})}
             value={groupTotal}
             type="number"
-            />
-          <button onClick={this.createGroups}>그룹 생성</button>
+          />
+          <button type="button" onClick={this.createGroups}>그룹 생성</button>
         </div>
         <GroupsTable groupsData={groups} />
         <Modal
@@ -184,7 +199,7 @@ class GroupMatchmaker extends React.Component {
           // style={customStyles}
           contentLabel="Example Modal"
         >
-          {ModalComp ? ModalComp : null}
+          {ModalComp || null}
         </Modal>
       </div>
     );

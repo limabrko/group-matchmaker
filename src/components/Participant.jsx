@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTimes} from '@fortawesome/free-solid-svg-icons';
+
 class Participant extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +17,7 @@ class Participant extends React.Component {
 
   onNameChange() {
     const {id} = this.state;
-    let name = this.state.name;
+    let {name} = this.state;
 
     if(!name) {
       name = `팀${this.props.index + 1}`;
@@ -28,7 +31,7 @@ class Participant extends React.Component {
 
   render() {
     const {
-      data, 
+      data,
       onShowDifferentGroup,
       onDelete,
       onDeleteDifferentGroup
@@ -45,14 +48,16 @@ class Participant extends React.Component {
               data.differentGroup.map((differentGroupPart) => (
                 <li key={differentGroupPart.name}>
                   <div>{differentGroupPart.name}</div>
-                  <button onClick={() => onDeleteDifferentGroup(data, differentGroupPart)}>끊다</button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => onDeleteDifferentGroup(data, differentGroupPart)}>끊다</button>
                 </li>
               ))
             }
           </ul>
           <div>
-            <button onClick={() => onShowDifferentGroup(data)}>차단팀 추가</button>
-            <button onClick={() => onDelete(data)}>삭제</button>
+            <button type="button" className="btn btn-sm btn-block" onClick={() => onShowDifferentGroup(data)}>차단 추가</button>
+            <button type="button" className="btn btn-sm btn-close" onClick={() => onDelete(data)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
           </div>
         </div>
       </div>

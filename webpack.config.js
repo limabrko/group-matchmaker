@@ -59,6 +59,9 @@ const config = {
       filename: devMode ? '[name].bundle.css' : '[name].[hash].bundle.css'
     })
   ],
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     compress: true,

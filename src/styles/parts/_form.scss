@@ -1,0 +1,26 @@
+.form-control {
+  background: #50597b;
+  border: solid 1px #1f253d;
+  color: #fff;
+  
+  &:focus {
+    background: #50597b;
+    color: #fff;
+    outline: 0;
+    border: 1px solid #11a8ab;
+    box-shadow: none;
+  }
+
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #7c839c;
+    opacity: 1; /* Firefox */
+  }
+
+  &::-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #7c839c;
+  }
+
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    color: #7c839c;
+  }
+}

@@ -15,20 +15,18 @@ class DifferentGroupInput extends React.Component {
   onChange(evt) {
     const {
       participants,
-      participantData, 
+      participantData,
       onAddDifferentGroup
     } = this.props;
 
-    const selectedParticipant = participants.find((participant) => {
-      return participant.name === evt.currentTarget.value;
-    });
-    
-    onAddDifferentGroup(participantData, selectedParticipant)
+    const selectedParticipant = participants.find((participant) => participant.name === evt.currentTarget.value);
+
+    onAddDifferentGroup(participantData, selectedParticipant);
   }
 
   render() {
     const {
-      participants, 
+      participants,
       participantData
     } = this.props;
     const {value} = this.state;
@@ -40,12 +38,10 @@ class DifferentGroupInput extends React.Component {
     });
 
     return (
-      <div>
+      <div className="list-different-group">
         <select value={value} onChange={this.onChange}>
           <option>선택하세요</option>
-          {availableParticipants.map((participant) => {
-            return (<option value={participant.name} key={participant.name}>{participant.name}</option>);
-          })}
+          {availableParticipants.map((participant) => (<option value={participant.name} key={participant.name}>{participant.name}</option>))}
         </select>
       </div>
     );

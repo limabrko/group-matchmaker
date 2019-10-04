@@ -1,0 +1,61 @@
+.participant-list {
+  padding: 50px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  h3 {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.participant {
+  width: 25%;
+  position: relative;
+
+  .inner {
+    margin: 10px;
+    padding: 10px;
+    background: #50597b;
+    border-radius: 5px;
+  }
+
+  .name {
+    color: $white;
+    font-size: 1.4rem;
+  }
+
+  .btn-block {
+    color: $white;
+    white-space: nowrap;
+    width: auto;
+    line-height: 24px;
+    background-color: #383f57;
+    border: 0;
+
+    &:hover {
+      background-color: #282c3c;
+    }
+  }
+
+  .btn-close {
+    color: $white;
+    position: absolute;
+    top: 26px;
+    right: 18px;
+    width: 26px;
+    padding: 0;
+    line-height: 22px;
+    font-size: 0.8rem;
+    border-color: #394263;
+
+    &:hover {
+      background-color: #e64c65; 
+    }
+  }
+}
+
+.list-different-group {
+  color: #9099b7;
+}
