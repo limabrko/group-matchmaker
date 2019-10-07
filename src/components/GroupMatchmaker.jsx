@@ -2,9 +2,11 @@ import React from 'react';
 import Modal from 'react-modal';
 
 import Participant from './Participant';
-import DifferentGroupInput from './DifferentGroupInput';
+import EditParticipant from './EditParticipant';
 import GroupsTable from './GroupsTable';
 import utils from '../helpers/utils';
+
+import ParticipantModel from '../models/Participant';
 
 class GroupMatchmaker extends React.Component {
   constructor(props) {
@@ -12,17 +14,9 @@ class GroupMatchmaker extends React.Component {
 
     this.state = {
       groupTotal: 4,
+      participantsPerGroup: 0,
       newParticipantName: '',
-      participants: [
-        {
-          name: 'Test',
-          differentGroup: []
-        },
-        {
-          name: 'Test2',
-          differentGroup: []
-        }
-      ],
+      participants: [],
       showModal: false,
       ModalComp: null,
       groups: []
@@ -32,10 +26,11 @@ class GroupMatchmaker extends React.Component {
     this.addParticipant = this.addParticipant.bind(this);
     this.createGroups = this.createGroups.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.onShowDifferentGroup = this.onShowDifferentGroup.bind(this);
+    this.onShowEdit = this.onShowEdit.bind(this);
     this.onAddDifferentGroup = this.onAddDifferentGroup.bind(this);
     this.deleteParticipant = this.deleteParticipant.bind(this);
     this.deleteDifferentGroup = this.deleteDifferentGroup.bind(this);
+    this.onEdit = this.onEdit.bind(this);
   }
 
   onKeyPressed(evt) {
@@ -44,14 +39,26 @@ class GroupMatchmaker extends React.Component {
     }
   }
 
-  onShowDifferentGroup(participantData) {
+  onEdit(originalData, newEditData) {
+    const {participants} = this.state;
+    Object.assign(originalData, newEditData);
+
+    this.setState({
+      participants,
+      showModal: false,
+      ModalComp: null
+    });
+  }
+
+  onShowEdit(participantData) {
     const {participants} = this.state;
 
     const ModalComp = (
-      <DifferentGroupInput
+      <EditParticipant
         participants={participants}
         participantData={participantData}
-        onAddDifferentGroup={this.onAddDifferentGroup}
+        onCancel={this.closeModal}
+        onEdit={this.onEdit}
       />
     );
     this.setState({
@@ -70,45 +77,28 @@ class GroupMatchmaker extends React.Component {
     });
   }
 
-  addParticipant() {
-    const {participants, newParticipantName} = this.state;
+  setParticipantsPerGroup(value) {
+    const participantsPerGroup = parseInt(value, 10);
+    const {participants} = this.state;
 
-    if(!newParticipantName) {
-      return;
-    }
-
-    const hasSameName = participants.some((participant) => participant.name.toLowerCase() === newParticipantName.toLowerCase());
-
-    if(hasSameName) {
-      alert('같은 이름 팀이 있습니다.');
-      return;
-    }
-
-    const newParticipant = {
-      name: newParticipantName,
-      differentGroup: [],
-      group: null
-    };
+    const groupTotal = participantsPerGroup > 0 ? Math.ceil(participants.length / participantsPerGroup) : 0;
 
     this.setState({
-      newParticipantName: '',
-      participants: [...participants, newParticipant]
+      groupTotal,
+      participantsPerGroup
     });
   }
 
-  createGroups() {
-    const {
-      participants,
-      groupTotal
-    } = this.state;
+  setGroupTotal(value) {
+    const groupTotal = parseInt(value, 10);
+    const {participants} = this.state;
+
+    const participantsPerGroup = groupTotal > 0 ? Math.ceil(participants.length / groupTotal) : 0;
 
     this.setState({
-      groups: utils.createGroups(participants, parseInt(groupTotal, 10))
+      groupTotal,
+      participantsPerGroup
     });
-  }
-
-  closeModal() {
-    this.setState({showModal: false});
   }
 
   deleteDifferentGroup(participantData, differentGroupPart) {
@@ -123,8 +113,51 @@ class GroupMatchmaker extends React.Component {
     });
   }
 
+  closeModal() {
+    this.setState({
+      showModal: false,
+      ModalComp: null
+    });
+  }
+
+  addParticipant() {
+    const {participants, newParticipantName, groupTotal} = this.state;
+
+    if(!newParticipantName) {
+      return;
+    }
+
+    const hasSameName = participants.some((participant) => participant.name.toLowerCase() === newParticipantName.toLowerCase());
+
+    if(hasSameName) {
+      alert('같은 이름 팀이 있습니다.');
+      return;
+    }
+
+    const newParticipant = new ParticipantModel(newParticipantName);
+    const participantsPerGroup = Math.ceil((participants.length + 1) / groupTotal);
+
+    this.setState({
+      newParticipantName: '',
+      participants: [...participants, newParticipant],
+      participantsPerGroup
+    });
+  }
+
+  createGroups() {
+    const {
+      participants,
+      groupTotal
+    } = this.state;
+
+    this.setState({
+      groups: utils.createGroups(participants, parseInt(groupTotal, 10))
+    });
+  }
+
   deleteParticipant(participantData) {
     const {participants} = this.state;
+    participants.forEach((participant) => participant.removeDifferentGroup(participantData));
     const newParticipants = participants.filter((participant) => participantData !== participant);
 
     this.setState({
@@ -136,19 +169,31 @@ class GroupMatchmaker extends React.Component {
     const {participants} = this.state;
 
     if(!participants.length) {
-      return <h3>등록된 참가자이 없습니다.</h3>;
+      return <div className="participant-container text-center"><h2>등록된 참가자이 없습니다.</h2></div>;
     }
 
-    return participants.map((participant, i) => (
-      <Participant
-        data={participant}
-        key={participant.name}
-        onShowDifferentGroup={this.onShowDifferentGroup}
-        onDelete={this.deleteParticipant}
-        onDeleteDifferentGroup={this.deleteDifferentGroup}
-        index={i}
-      />
-    ));
+    return (
+      <div className="participant-container">
+        <h2>
+          참가자
+          <small>{` (${participants.length})`}</small>
+        </h2>
+        <div className="participant-list">
+          {
+            participants.map((participant, i) => (
+              <Participant
+                data={participant}
+                key={participant.name}
+                onShowEdit={this.onShowEdit}
+                onDelete={this.deleteParticipant}
+                onDeleteDifferentGroup={this.deleteDifferentGroup}
+                index={i}
+              />
+            ))
+          }
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -157,7 +202,8 @@ class GroupMatchmaker extends React.Component {
       groupTotal,
       showModal,
       ModalComp,
-      groups
+      groups,
+      participantsPerGroup
     } = this.state;
 
     return (
@@ -179,25 +225,43 @@ class GroupMatchmaker extends React.Component {
             </div>
           </div>
         </div>
-        <div className="participant-list">
-          { this.renderParticipantsList() }
-        </div>
-        <div>
-          <input
-            placeholder="그룹수"
-            onChange={(evt) => this.setState({groupTotal: evt.currentTarget.value})}
-            value={groupTotal}
-            type="number"
-          />
-          <button type="button" onClick={this.createGroups}>그룹 생성</button>
+        { this.renderParticipantsList() }
+        <div className="group-controls">
+          <div className="form-row justify-content-center">
+            <div className="form-group col-md-2">
+              <label htmlFor="group_total">그룹수</label>
+              <input
+                type="number"
+                className="form-control"
+                id="group_total"
+                placeholder="그룹수"
+                onChange={(evt) => this.setGroupTotal(evt.currentTarget.value)}
+                value={groupTotal}
+              />
+            </div>
+            <div className="form-group col-md-2">
+              <label htmlFor="participants_per_group">그룹의 참가자수</label>
+              <input
+                type="number"
+                className="form-control"
+                id="participants_per_group"
+                placeholder="그룹수"
+                onChange={(evt) => this.setParticipantsPerGroup(evt.currentTarget.value)}
+                value={participantsPerGroup}
+              />
+            </div>
+            <div className="form-group wrap-btn-create">
+              <button type="button" className="btn btn-success btn-lg" onClick={this.createGroups}>그룹 생성</button>
+            </div>
+          </div>
         </div>
         <GroupsTable groupsData={groups} />
         <Modal
           ariaHideApp={false}
           isOpen={showModal}
           onRequestClose={this.closeModal}
-          // style={customStyles}
-          contentLabel="Example Modal"
+          className="Modal"
+          overlayClassName="Overlay"
         >
           {ModalComp || null}
         </Modal>

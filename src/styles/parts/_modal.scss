@@ -1,3 +1,37 @@
-.ReactModal__Overlay {
-  background-color: rgba(0, 0, 0, 0.35);
+.Modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  background-color: $white;
+  z-index: 11;
+
+  .modal-title {
+    margin-bottom: 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #747a90;
+    color: #a7aab5;
+    font-size: 1.8rem;
+  }
+
+  .modal-actions {
+    border-top: 1px solid #747a90;
+    padding-top: 20px;
+    text-align: right;
+
+    .btn {
+      margin-left: 15px;
+    }
+  }
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 10;
 }

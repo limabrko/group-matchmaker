@@ -2,73 +2,44 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faTimes, faCog} from '@fortawesome/free-solid-svg-icons';
 
-class Participant extends React.Component {
-  constructor(props) {
-    super(props);
+import ParticipantModel from '../models/Participant';
 
-    this.state = {
-      name: props.data.name
-    };
+function Participant(props) {
+  const {
+    data,
+    onShowEdit,
+    onDelete,
+    onDeleteDifferentGroup
+  } = props;
 
-    this.onNameChange = this.onNameChange.bind(this);
-  }
-
-  onNameChange() {
-    const {id} = this.state;
-    let {name} = this.state;
-
-    if(!name) {
-      name = `팀${this.props.index + 1}`;
-      this.setState({
-        name
-      });
-    }
-
-    this.props.onNameChange(id, name);
-  }
-
-  render() {
-    const {
-      data,
-      onShowDifferentGroup,
-      onDelete,
-      onDeleteDifferentGroup
-    } = this.props;
-
-    return (
-      <div className="participant">
-        <div className="inner">
-          <div className="name">
-            {data.name}
-          </div>
-          <ul>
+  return (
+    <div className="participant">
+      <div className="inner">
+        <div className="name">
+          {data.name}
+        </div>
+        <div>
+          <button type="button" className="btn btn-sm btn-block" onClick={() => onShowEdit(data)}>
             {
-              data.differentGroup.map((differentGroupPart) => (
-                <li key={differentGroupPart.name}>
-                  <div>{differentGroupPart.name}</div>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => onDeleteDifferentGroup(data, differentGroupPart)}>끊다</button>
-                </li>
-              ))
+              data.differentGroup.length > 0 ? <span className="badge badge-pill badge-danger">{data.differentGroup.length}</span> : null
             }
-          </ul>
-          <div>
-            <button type="button" className="btn btn-sm btn-block" onClick={() => onShowDifferentGroup(data)}>차단 추가</button>
-            <button type="button" className="btn btn-sm btn-close" onClick={() => onDelete(data)}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
+            <FontAwesomeIcon icon={faCog} />
+          </button>
+          <button type="button" className="btn btn-sm btn-close" onClick={() => onDelete(data)}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 Participant.propTypes = {
-  data: PropTypes.shape({
-    name: PropTypes.string
-  })
+  onShowEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  data: PropTypes.instanceOf(ParticipantModel).isRequired
 };
 
 export default Participant;

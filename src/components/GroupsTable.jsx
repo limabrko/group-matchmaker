@@ -10,6 +10,11 @@ function GroupsTable({groupsData}) {
   let i = 0;
 
   while(hasParticipant) {
+    if(!groupsData[0].participants[i]) {
+      hasParticipant = false;
+      continue;
+    }
+
     tableRows.push(
       {
         id: i,
@@ -18,7 +23,7 @@ function GroupsTable({groupsData}) {
             hasParticipant = false;
             return '';
           }
-      
+
           return group.participants[i].name;
         })
       }
@@ -28,22 +33,20 @@ function GroupsTable({groupsData}) {
   }
 
   return (
-    <div>
-      <table>
-        <thead>
+    <div className="table-container">
+      <table className="table table-bordered">
+        <thead className="thead-dark">
           <tr>
             {groupsData.map((group) => <th key={group.name}>{group.name}</th>)}
           </tr>
         </thead>
         <tbody>
           {
-            tableRows.map(({id, items}) => {
-              return (
-                <tr key={id}>
-                  {items.map((groupName, j) => groupName ? <td key={groupName}>{groupName}</td> : <td key={`${id}_${j}`}></td>)}
-                </tr>
-              );
-            })
+            tableRows.map(({id, items}) => (
+              <tr key={id}>
+                {items.map((groupName, j) => (groupName ? <td key={groupName}>{groupName}</td> : <td key={`${id}_${j}`}></td>))}
+              </tr>
+            ))
           }
         </tbody>
       </table>

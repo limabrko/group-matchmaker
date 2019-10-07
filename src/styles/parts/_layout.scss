@@ -1,12 +1,13 @@
-.participant-list {
-  padding: 50px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+.participant-container {
+  h2 {
+    padding: 45px 10px 5px;
+    color: #a7aab5;
+  }
 
-  h3 {
-    flex: 1;
-    text-align: center;
+  .participant-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 
@@ -16,7 +17,7 @@
 
   .inner {
     margin: 10px;
-    padding: 10px;
+    padding: 10px 12px;
     background: #50597b;
     border-radius: 5px;
   }
@@ -26,20 +27,7 @@
     font-size: 1.4rem;
   }
 
-  .btn-block {
-    color: $white;
-    white-space: nowrap;
-    width: auto;
-    line-height: 24px;
-    background-color: #383f57;
-    border: 0;
-
-    &:hover {
-      background-color: #282c3c;
-    }
-  }
-
-  .btn-close {
+  .btn-close, .btn-block {
     color: $white;
     position: absolute;
     top: 26px;
@@ -54,8 +42,73 @@
       background-color: #e64c65; 
     }
   }
+
+  .btn-block {
+    right: 48px;
+  }
+
+  .badge-pill {
+    position: absolute;
+    top: -9px;
+    right: 18px;
+    padding-top: 2px;
+  }
 }
 
-.list-different-group {
-  color: #9099b7;
+.different-group-list {
+  span {
+    color: #f9a5bc;
+  }
+  
+  li {
+    padding: 6px 5px;
+  }
+
+  .btn {
+    padding: 0 4px;
+    line-height: 16px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+  }
+}
+
+.edit-participant-container {
+  background-color: #50597b;
+
+  .inner {
+    padding: 20px;
+  }
+}
+
+.group-controls {
+  padding-top: 60px;
+
+  .wrap-btn-create {
+    padding-top: 22px;
+  }
+}
+
+.table-container {
+  padding-top: 20px;
+}
+
+.table {
+  .thead-dark {
+    th {
+      text-transform: uppercase;
+      background-color: #1f253d;
+    }
+  }
+
+  tbody {
+    td {
+      background-color: $white;
+    }
+  }
+}
+
+address {
+  text-align: center;
+  color: #a7aab5;
+  margin: 20px 0;
 }

@@ -1,13 +1,15 @@
+import GroupModel from '../models/Group';
+
 /**
  * Get random number between min (included) and max (excluded)
- * @param {number} min 
- * @param {number} max 
- * @param {number[]} blockedValues 
+ * @param {number} min
+ * @param {number} max
+ * @param {number[]} blockedValues
  */
 function getRndInteger(min, max, blockedValues = []) {
   const selectedValue = Math.floor(Math.random() * (max - min)) + min;
 
-  if (blockedValues.indexOf(selectedValue) !== -1) {
+  if(blockedValues.indexOf(selectedValue) !== -1) {
     return getRndInteger(min, max, blockedValues);
   }
 
@@ -19,21 +21,20 @@ function getRndInteger(min, max, blockedValues = []) {
  * @param {Array} a
  */
 function shuffleArray(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+  for(let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
 /**
  * Create randomized groups based on preferences
- * @param {object[]} participants 
- * @param {number} groupTotal 
+ * @param {object[]} participants
+ * @param {number} groupTotal
  */
 function createGroups(participants, groupTotal) {
   const groups = [];
-  const participantsPerGroup = Math.ceil(participants.length / groupTotal);
 
   // Reset participants groups
   participants.forEach((participant) => {
@@ -41,17 +42,14 @@ function createGroups(participants, groupTotal) {
   });
 
   // Create groups
-  for (let i = 0; i < groupTotal; i++) {
-    groups.push({
-      name: `그룹${String.fromCharCode(97 + i)}`,
-      participants: []
-    });
+  for(let i = 0; i < groupTotal; i++) {
+    groups.push(new GroupModel(`그룹${String.fromCharCode(97 + i)}`));
   }
 
   // Create priority list
   const priorityParticipants = participants.filter((participant) => participant.differentGroup.length !== 0);
 
-  for (let i = 0; i < priorityParticipants.length; i++) {
+  for(let i = 0; i < priorityParticipants.length; i++) {
     const curParticipant = priorityParticipants[i];
     const unavailableGroups = curParticipant.differentGroup.reduce((acc, differentGroupPart) => {
       if(differentGroupPart.group && acc.indexOf(differentGroupPart.group) === -1) {
@@ -70,7 +68,7 @@ function createGroups(participants, groupTotal) {
   }
 
   // Select other participants
-  let missingParticipants = participants.filter((participant) => participant.group === null);
+  const missingParticipants = participants.filter((participant) => participant.group === null);
   let i = 0;
 
   while(missingParticipants.length !== 0) {
@@ -79,7 +77,7 @@ function createGroups(participants, groupTotal) {
         if(!missingParticipants.length) {
           continue;
         }
-  
+
         const selectedParticipantIndex = getRndInteger(0, missingParticipants.length);
         const selectedParticipant = missingParticipants[selectedParticipantIndex];
         selectedParticipant.group = groups[j];

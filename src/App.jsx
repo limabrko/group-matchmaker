@@ -13,6 +13,10 @@ function App() {
         <h1>Group Matchmaker</h1>
         <GroupMatchmaker />
       </div>
+      <address>
+        Made by &nbsp;
+        <a href="https://github.com/fill-lima">Felipe Lima</a>
+      </address>
     </div>
   );
 }
