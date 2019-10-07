@@ -13,6 +13,7 @@ class EditParticipant extends React.Component {
       editData: props.participantData.clone()
     };
 
+    this.setName = this.setName.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onProceed = this.onProceed.bind(this);
     this.onDeleteDifferentGroupPart = this.onDeleteDifferentGroupPart.bind(this);
@@ -63,6 +64,12 @@ class EditParticipant extends React.Component {
     onEdit(participantData, editData);
   }
 
+  setName(evt) {
+    const {editData} = this.state;
+    editData.name = evt.currentTarget.value;
+    this.setState({editData});
+  }
+
   render() {
     const {
       participants,
@@ -95,13 +102,13 @@ class EditParticipant extends React.Component {
                 className="form-control"
                 id="participant_name"
                 placeholder="그룹수"
-                onChange={(evt) => this.setState({editData: {...editData, name: evt.currentTarget.value}})}
+                onChange={this.setName}
                 value={editData.name}
               />
 
             </div>
             <div className="form-group col-md-6">
-              <label htmlFor="participant_name">같은 그룹에 아닌 참가자</label>
+              <label htmlFor="participant_name">같은 그룹 배정 제외할 참가자</label>
               <select className="form-control" value={value} onChange={this.onChange}>
                 <option>선택하세요</option>
                 {availableParticipants.map((participant) => (<option value={participant.name} key={participant.name}>{participant.name}</option>))}

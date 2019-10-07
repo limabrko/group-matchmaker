@@ -41,7 +41,12 @@ class GroupMatchmaker extends React.Component {
 
   onEdit(originalData, newEditData) {
     const {participants} = this.state;
-    Object.assign(originalData, newEditData);
+
+    originalData.differentGroup.forEach((participant) => participant.removeDifferentGroup(originalData));
+    newEditData.differentGroup.forEach((participant) => participant.addDifferentGroup(newEditData));
+
+    const index = participants.indexOf(originalData);
+    participants.splice(index, 1, newEditData);
 
     this.setState({
       participants,

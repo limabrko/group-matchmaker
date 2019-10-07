@@ -107,12 +107,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_Participant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/Participant */ "./src/models/Participant.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -148,6 +142,7 @@ function (_React$Component) {
     _this.state = {
       editData: props.participantData.clone()
     };
+    _this.setName = _this.setName.bind(_assertThisInitialized(_this));
     _this.onChange = _this.onChange.bind(_assertThisInitialized(_this));
     _this.onProceed = _this.onProceed.bind(_assertThisInitialized(_this));
     _this.onDeleteDifferentGroupPart = _this.onDeleteDifferentGroupPart.bind(_assertThisInitialized(_this));
@@ -203,10 +198,17 @@ function (_React$Component) {
       onEdit(participantData, editData);
     }
   }, {
+    key: "setName",
+    value: function setName(evt) {
+      var editData = this.state.editData;
+      editData.name = evt.currentTarget.value;
+      this.setState({
+        editData: editData
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
       var _this$props2 = this.props,
           participants = _this$props2.participants,
           participantData = _this$props2.participantData,
@@ -237,19 +239,13 @@ function (_React$Component) {
         className: "form-control",
         id: "participant_name",
         placeholder: "\uADF8\uB8F9\uC218",
-        onChange: function onChange(evt) {
-          return _this2.setState({
-            editData: _objectSpread({}, editData, {
-              name: evt.currentTarget.value
-            })
-          });
-        },
+        onChange: this.setName,
         value: editData.name
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "form-group col-md-6"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
         htmlFor: "participant_name"
-      }, "\uAC19\uC740 \uADF8\uB8F9\uC5D0 \uC544\uB2CC \uCC38\uAC00\uC790"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("select", {
+      }, "\uAC19\uC740 \uADF8\uB8F9 \uBC30\uC815 \uC81C\uC678\uD560 \uCC38\uAC00\uC790"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("select", {
         className: "form-control",
         value: value,
         onChange: this.onChange
@@ -383,7 +379,14 @@ function (_React$Component) {
     key: "onEdit",
     value: function onEdit(originalData, newEditData) {
       var participants = this.state.participants;
-      Object.assign(originalData, newEditData);
+      originalData.differentGroup.forEach(function (participant) {
+        return participant.removeDifferentGroup(originalData);
+      });
+      newEditData.differentGroup.forEach(function (participant) {
+        return participant.addDifferentGroup(newEditData);
+      });
+      var index = participants.indexOf(originalData);
+      participants.splice(index, 1, newEditData);
       this.setState({
         participants: participants,
         showModal: false,
@@ -946,6 +949,15 @@ function () {
       });
       clonie.group = this.group;
       return clonie;
+    }
+  }, {
+    key: "addDifferentGroup",
+    value: function addDifferentGroup(participantData) {
+      var index = this.differentGroup.indexOf(participantData);
+
+      if (index === -1) {
+        this.differentGroup.push(participantData);
+      }
     }
   }, {
     key: "removeDifferentGroup",

@@ -12,6 +12,13 @@ class Participant {
     return clonie;
   }
 
+  addDifferentGroup(participantData) {
+    const index = this.differentGroup.indexOf(participantData);
+    if(index === -1) {
+      this.differentGroup.push(participantData);
+    }
+  }
+
   removeDifferentGroup(participantData) {
     const index = this.differentGroup.indexOf(participantData);
     if(index !== -1) {
