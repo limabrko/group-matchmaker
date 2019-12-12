@@ -155,6 +155,11 @@ class GroupMatchmaker extends React.Component {
       groupTotal
     } = this.state;
 
+    if(groupTotal > participants.length) {
+      alert('The number of participants must be equal or higher than groups');
+      return;
+    }
+
     this.setState({
       groups: utils.createGroups(participants, parseInt(groupTotal, 10))
     });

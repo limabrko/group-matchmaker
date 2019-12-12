@@ -93,6 +93,8 @@
 }
 
 .table {
+  table-layout: fixed;
+  
   .thead-dark {
     th {
       text-transform: uppercase;
