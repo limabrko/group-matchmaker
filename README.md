@@ -10,7 +10,7 @@
 
 # Demo
 
-[https://lima-space.github.io/group-matchmaker/](https://lima-space.github.io/group-matchmaker/)
+[https://limabrko.github.io/group-matchmaker/](https://limabrko.github.io/group-matchmaker/)
 
 # Built-with
 - [React](https://reactjs.org/)
